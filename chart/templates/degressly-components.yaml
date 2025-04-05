@@ -1,0 +1,136 @@
+# Degressly-core
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+ name: degressly-core
+ labels:
+        app: degressly-core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: degressly-core
+
+  template:
+    metadata:
+      labels:
+        app: degressly-core
+      
+    spec:
+      containers:
+        - name: degressly-core
+          image: degressly-core:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - secretRef:
+                name: degressly-secrets
+
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: degressly-core
+  labels:
+    app: degressly-core
+
+spec:
+  selector:
+    app: degressly-core
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+---
+# Degressly-downstream
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+ name: degressly-downstream
+ labels:
+        app: degressly-downstream
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: degressly-downstream
+
+  template:
+    metadata:
+      labels:
+        app: degressly-downstream
+      
+    spec:
+      containers:
+        - name: degressly-downstream
+          image: degressly-downstream:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - secretRef:
+                name: degressly-secrets
+
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: degressly-downstream
+  labels:
+    app: degressly-downstream
+  
+spec:
+  selector:
+    app: degressly-downstream
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+
+---
+# Degressly comparator
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+ name: degressly-comparator
+ labels:
+        app: degressly-comparator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: degressly-comparator
+
+  template:
+    metadata:
+      labels:
+        app: degressly-comparator
+      
+    spec:
+      containers:
+        - name: degressly-comparator
+          image: degressly-comparator:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - secretRef:
+                name: degressly-secrets
+
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: degressly-comparator
+  labels:
+    app: degressly-comparator
+  
+spec:
+  selector:
+    app: degressly-comparator
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 10000

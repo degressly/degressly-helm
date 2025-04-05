@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: degressly-mongo
+  labels:
+    app: degressly-mongo
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: degressly-mongo
+    
+  template:
+    metadata:
+      labels:
+        app: degressly-mongo
+    
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 27017
+          envFrom:
+          - configMapRef: 
+              name: degressly-mongo-config
+          volumeMounts:
+          - name: degressly-mongo-volume
+            mountPath: /docker-entrypoint-initdb.d/
+      volumes:
+      - name: degressly-mongo-volume
+        configMap: 
+          name: degressly-mongo-config
+          items:
+          - key: init-mongo.js
+            path: init-mongo.js
+
+---
+
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: degressly-mongo
+spec:
+  selector:
+    app: degressly-mongo
+  
+  ports:
+  - name: degressly-mongo
+    port: 27017
+    targetPort: 27017
+
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: degressly-mongo-config
+data:
+  # Add your environment variables here
+  MONGO_INITDB_ROOT_USERNAME: degressly_user
+  MONGO_INITDB_ROOT_PASSWORD: secure_password
+  MONGO_INITDB_DATABASE: degressly
+  init-mongo.js: |
+    db = db.getSiblingDB("degressly");
+
+    db.createUser({
+      user: "degressly_user",
+      pwd: "secure_password",
+      roles: [
+        { role: "readWrite", db: "degressly" },
+        { role: "readWrite", db: "degressly_pth_combination" }
+      ]
+    });
+
+    db = db.getSiblingDB("degressly_pth_combination");
+
+    db.createCollection("init_collection", { capped: false });
+

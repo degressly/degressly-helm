@@ -1,0 +1,64 @@
+{{- $kafkaServiceName := "degressly-kafka" -}}
+---
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ $kafkaServiceName }}
+  labels:
+    app: {{ $kafkaServiceName }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ $kafkaServiceName }}
+  template:
+    metadata:
+      labels:
+        app: {{ $kafkaServiceName }}
+    spec:
+      containers:
+        - name: {{ $kafkaServiceName }}
+          image: confluentinc/cp-kafka:7.9.0
+          env:
+          - name: KAFKA_ADVERTISED_LISTENERS
+            value: "INTERNAL://{{ $kafkaServiceName }}.{{ .Release.Namespace }}.svc.cluster.local:9092,EXTERNAL_SAME_HOST://localhost:9092"
+          - name: KAFKA_CONTROLLER_LISTENER_NAMES
+            value: "CONTROLLER"
+          - name: KAFKA_CONTROLLER_QUORUM_VOTERS
+            value: "1@localhost:9093"
+          - name: KAFKA_INTER_BROKER_LISTENER_NAME
+            value: "INTERNAL"
+          - name: KAFKA_LISTENERS
+            value: "INTERNAL://:9092,EXTERNAL_SAME_HOST://:29092,CONTROLLER://:9093"
+          - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+            value: "INTERNAL:PLAINTEXT,EXTERNAL_SAME_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT"
+          - name: KAFKA_PROCESS_ROLES
+            value: "broker,controller"
+          - name: CLUSTER_ID
+            value: "1"
+          - name: KAFKA_NODE_ID
+            value: "1"
+          - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+            value: "1"
+
+          readinessProbe:
+            tcpSocket:
+              port: 9092
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: {{ $kafkaServiceName }}
+spec:
+  selector:
+    app: {{ $kafkaServiceName }}
+  ports:
+    - name: kafka
+      protocol: TCP
+      port: 9092
+      targetPort: 9092

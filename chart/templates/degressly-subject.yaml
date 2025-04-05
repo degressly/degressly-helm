@@ -1,0 +1,50 @@
+{{- range $subjectName := $.Values.subjectNames }}
+---
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: degressly-subject-{{ $subjectName  }}-deployment
+  labels:
+    app: degressly-subject-{{ $subjectName  }}-deployment
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: degressly-subject-{{ $subjectName }}
+
+  template:
+    metadata:
+      labels:
+        app: degressly-subject-{{ $subjectName }}
+    
+    spec:
+      containers:
+      {{ (index $.Values $subjectName).spec.containers | toYaml | nindent 6 | trim }}
+
+      {{- $spec := omit (index $.Values $subjectName ).spec "containers" -}}
+      {{- if $spec}}
+      {{ $spec | toYaml | indent 6 | trim}}
+      {{- end}}
+      
+
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: degressly-subject-{{ $subjectName }}-service
+  labels:
+    app: degressly-subject-{{ $subjectName }}-service
+
+spec:
+  selector:
+    app: degressly-subject-{{ $subjectName  }}
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: {{ (index $.Values $subjectName).targetPort }}
+
+{{- end }}
