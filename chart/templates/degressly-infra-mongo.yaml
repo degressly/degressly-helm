@@ -73,12 +73,8 @@ data:
       user: "degressly_user",
       pwd: "secure_password",
       roles: [
-        { role: "readWrite", db: "degressly" },
-        { role: "readWrite", db: "degressly_pth_combination" }
+        { role: "readWrite", db: "degressly" }
       ]
     });
-
-    db = db.getSiblingDB("degressly_pth_combination");
-
     db.createCollection("init_collection", { capped: false });
 
