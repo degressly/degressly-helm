@@ -1,0 +1,29 @@
+primary:
+  targetPort: 80
+  spec:
+    containers:
+    - name: nginx
+      image: nginx
+      ports:
+        - containerPort: 80
+
+
+secondary:
+  targetPort: 80
+  spec:
+    containers:
+    - name: nginx
+      image: nginx
+      ports:
+        - containerPort: 80
+
+
+candidate:
+  targetPort: 80
+  spec:  
+    containers:
+    - name: nginx
+      image: nginx
+      ports:
+        - containerPort: 80
+      
