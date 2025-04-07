@@ -5,6 +5,7 @@ kind: Deployment
 
 metadata:
  name: degressly-core
+ namespace: {{ .Values.ns }}
  labels:
         app: degressly-core
 spec:
@@ -15,6 +16,7 @@ spec:
 
   template:
     metadata:
+      namespace: {{ .Values.ns }}
       labels:
         app: degressly-core
       
@@ -33,6 +35,7 @@ kind: Service
 
 metadata:
   name: degressly-core
+  namespace: {{ .Values.ns }}
   labels:
     app: degressly-core
 
@@ -50,6 +53,7 @@ kind: Deployment
 
 metadata:
  name: degressly-downstream
+ namespace: {{ .Values.ns }}
  labels:
         app: degressly-downstream
 spec:
@@ -60,6 +64,7 @@ spec:
 
   template:
     metadata:
+      namespace: {{ .Values.ns }}
       labels:
         app: degressly-downstream
       
@@ -78,6 +83,7 @@ kind: Service
 
 metadata:
   name: degressly-downstream
+  namespace: {{ .Values.ns }}
   labels:
     app: degressly-downstream
   
@@ -96,6 +102,7 @@ kind: Deployment
 
 metadata:
  name: degressly-comparator
+ namespace: {{ .Values.ns }}
  labels:
         app: degressly-comparator
 spec:
@@ -106,6 +113,7 @@ spec:
 
   template:
     metadata:
+      namespace: {{ .Values.ns }}
       labels:
         app: degressly-comparator
       
@@ -124,6 +132,7 @@ kind: Service
 
 metadata:
   name: degressly-comparator
+  namespace: {{ .Values.ns }}
   labels:
     app: degressly-comparator
   

@@ -5,6 +5,7 @@ kind: Deployment
 
 metadata:
   name: {{ $kafkaServiceName }}
+  namespace: {{ .Values.ns }}
   labels:
     app: {{ $kafkaServiceName }}
 spec:
@@ -14,6 +15,7 @@ spec:
       app: {{ $kafkaServiceName }}
   template:
     metadata:
+      namespace: {{ .Values.ns }}
       labels:
         app: {{ $kafkaServiceName }}
     spec:
@@ -22,7 +24,7 @@ spec:
           image: confluentinc/cp-kafka:7.9.0
           env:
           - name: KAFKA_ADVERTISED_LISTENERS
-            value: "INTERNAL://{{ $kafkaServiceName }}.{{ .Release.Namespace }}.svc.cluster.local:9092,EXTERNAL_SAME_HOST://localhost:9092"
+            value: "INTERNAL://{{ $kafkaServiceName }}.{{ .Values.ns }}.svc.cluster.local:9092,EXTERNAL_SAME_HOST://localhost:9092"
           - name: KAFKA_CONTROLLER_LISTENER_NAMES
             value: "CONTROLLER"
           - name: KAFKA_CONTROLLER_QUORUM_VOTERS
@@ -54,6 +56,7 @@ kind: Service
 
 metadata:
   name: {{ $kafkaServiceName }}
+  namespace: {{ .Values.ns }}
 spec:
   selector:
     app: {{ $kafkaServiceName }}

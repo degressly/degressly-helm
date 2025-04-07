@@ -1,3 +1,5 @@
+ns: default
+
 subjectNames:
   - primary
   - secondary

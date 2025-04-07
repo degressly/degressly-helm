@@ -6,6 +6,7 @@ kind: Deployment
 
 metadata:
   name: degressly-subject-{{ $subjectName  }}-deployment
+  namespace: {{ $.Values.ns }}
   labels:
     app: degressly-subject-{{ $subjectName  }}-deployment
 
@@ -36,6 +37,7 @@ kind: Service
 
 metadata:
   name: degressly-subject-{{ $subjectName }}-service
+  namespace: {{ $.Values.ns }}
   labels:
     app: degressly-subject-{{ $subjectName }}-service
 
